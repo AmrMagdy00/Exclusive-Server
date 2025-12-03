@@ -47,7 +47,7 @@
 import logger from "../../middleware/logger/logger.js";
 import ApiError from "../../utils/ApiError.js";
 import ApiSuccess from "../../utils/ApiSuccess.js";
-import { validateEmail } from "../../Validators/authValidator.js";
+import { validateEmail } from "../../validators/authValidator.js";
 import TokenService from "./tokenService.js";
 
 export default class AuthService {
