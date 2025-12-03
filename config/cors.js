@@ -71,24 +71,10 @@ const allowedOrigins = {
  * @type {import('cors').CorsOptions}
  */
 export const corsOptions = {
-  // Define allowed origins dynamically based on environment
-  origin: function (origin, callback) {
-    const env = process.env.NODE_ENV || "development";
-    const origins = allowedOrigins[env] || allowedOrigins.development;
-
-    // Allow requests with no origin (like mobile apps, curl requests, or same-origin requests)
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    // Check if the requesting origin is in the whitelist
-    if (origins.includes(origin)) {
-      callback(null, true);
-    } else {
-      // Origin not allowed - reject the request
-      callback(new Error(`CORS policy: Origin '${origin}' is not allowed`));
-    }
-  },
+  // Allow any origin — reflect request origin and permit credentials
+  // This makes the API accessible from any domain (development & production).
+  // Warning: This is permissive and may expose sensitive endpoints. Use with caution.
+  origin: true,
 
   // Allow these HTTP methods in cross-origin requests
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -101,7 +87,8 @@ export const corsOptions = {
   ],
 
   // Allow credentials (cookies, authorization headers) to be included in cross-origin requests
-  // Important: This requires specific origin to be specified, not '*'
+  // With `origin: true`, the server will echo the request Origin header which allows
+  // credentials to be used while still returning a specific Access-Control-Allow-Origin.
   credentials: true,
 
   // Preflight request caching time (in seconds)

@@ -66,8 +66,11 @@ export default class authController {
       // Configure secure cookie options
       const cookieOptions = {
         httpOnly: true, // Accessible only by web server, not JavaScript (XSS protection)
-        secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
-        sameSite: "strict", // Prevent CSRF attacks
+        // In production we require HTTPS; during development (localhost) secure=false
+        secure: process.env.NODE_ENV === "production",
+        // Allow cross-site cookies so browsers send cookies for requests from other origins.
+        // Note: Browsers require `secure: true` when `sameSite: 'none'`.
+        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000, // Expire after 7 days (in milliseconds)
       };
 

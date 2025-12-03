@@ -48,6 +48,13 @@ import createProductRouter from "./routes/productRouter.js";
 export function createApp() {
   const app = express();
 
+  // When running behind a proxy (like Render, Heroku, etc.), enable trust proxy
+  // so Express knows the original request protocol (https) and can work correctly
+  // with secure cookies and redirects. Only enable in production.
+  if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+  }
+
   // -------------------- CORS Configuration --------------------
   // Enable CORS with origin whitelist for secure cross-origin requests
   // Allows specific localhost ports for development (3000, 3001, 5173)
