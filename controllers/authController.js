@@ -90,29 +90,34 @@ export default class authController {
    * Handles POST /users/register requests
    *
    * Flow:
-   * 1. Extracts email and password from request body.
+   * 1. Extracts fullName, email, and password from request body.
    * 2. Validates input and checks email uniqueness through authService.
-   * 3. Creates new user account in database.
+   * 3. Creates new user account in database with fullName.
    * 4. Returns success response with new user ID.
    * 5. If an error occurs (invalid email, duplicate email, etc.), forwards it to global error handler.
    *
    * Validations performed:
+   * - Full name must be 3-50 characters.
    * - Email must contain only English characters.
    * - Email must be valid format.
    * - Email must not already exist in database.
    * - Password must be at least 6 characters.
    *
-   * @param {import('express').Request} req - Express request with email/password in body
+   * @param {import('express').Request} req - Express request with fullName/email/password in body
    * @param {import('express').Response} res - Express response object
    * @param {import('express').NextFunction} next - Express next function for error handling
    */
   async register(req, res, next) {
     try {
-      // Extract email and password from request body
-      const { email, password } = req.body;
+      // Extract fullName, email, and password from request body
+      const { email, password, fullName } = req.body;
 
       // Call authService to validate and register new user
-      const result = await this.authService.register({ email, password });
+      const result = await this.authService.register({
+        email,
+        password,
+        fullName,
+      });
 
       // Return success response with newly created user ID
       return res.status(result.statusCode).json(result);

@@ -4,14 +4,16 @@
  * Defines the User schema and model for MongoDB using Mongoose.
  *
  * Responsibilities:
- * 1. Defines User fields (email, password) with validation rules.
+ * Defines User fields (fullName, email, password, role) with validation rules.
  * 2. Adds timestamps for createdAt and updatedAt.
  * 3. Pre-save middleware to hash passwords before saving.
  * 4. Instance method to compare a plain password with the hashed password.
  *
  * Field Details:
- * - email: required, unique, lowercase, trimmed, validated as a proper email.
+ * - fullName: required, string (3-50 chars), trimmed.
+ * - email: required, unique, lowercase, trimmed, validated as a proper email (English only).
  * - password: required, minimum length 6, hashed before saving.
+ * - role: optional, enum (user/admin), defaults to 'user'.
  *
  * Middleware:
  * - pre("save"): hashes password if modified or new.
@@ -38,6 +40,13 @@ import bcrypt from "bcrypt"; // Library to hash passwords
 // -------------------- User Schema Definition --------------------
 const userSchema = new mongoose.Schema(
   {
+    fullName: {
+      type: String,
+      required: [true, "Full Name Is Required"],
+      trim: true,
+      minlength: [3, "Full name must be at least 3 characters"],
+      maxlength: [50, "Full name cannot exceed 50 characters"],
+    },
     // Email field
     email: {
       type: String,

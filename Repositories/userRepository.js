@@ -11,10 +11,11 @@
  * Methods:
  * - async findByEmail(email)
  *   - Searches the database for a user with the given email.
+ *   - Includes password field (select +password for comparisons).
  *   - Returns the user document if found, otherwise returns null.
  *
  * - async create(userData)
- *   - Creates a new User document with the provided data.
+ *   - Creates a new User document with the provided data (fullName, email, password).
  *   - Saves the user to the database.
  *   - Relies on User model pre-save middleware to hash the password.
  *   - Returns the saved user document.
@@ -23,9 +24,9 @@
  * - User model: Mongoose model representing the User collection.
  *
  * Usage:
- * import UserRepository from './repositories/userRepository.js';
+ * import UserRepository from './Repositories/userRepository.js';
  * const userRepository = new UserRepository();
- * const user = await userRepository.create({ email: 'test@example.com', password: 'secret123' });
+ * const user = await userRepository.create({ fullName: 'John Doe', email: 'test@example.com', password: 'secret123' });
  * const foundUser = await userRepository.findByEmail('test@example.com');
  */
 

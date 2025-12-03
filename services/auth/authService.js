@@ -9,18 +9,17 @@
  * 3. Returns structured success or error responses for controllers using ApiSuccess / ApiError.
  *
  * Methods:
- * - async Register(email, password)
+ * - async register({ email, password, fullName })
  *    - Validates email format (English only)
  *    - Checks if email already exists
- *    - Creates a new user
- *    - Returns ApiSuccess with message, statusCode, data, and successCode
+ *    - Creates a new user with fullName
+ *    - Returns ApiSuccess with userId
  *
- * - async login(email, password)
+ * - async login({ email, password })
  *    - Finds user by email
  *    - Compares password with hashed password
- *    - Returns ApiSuccess if credentials are correct
- *    - Throws ApiError for invalid email or password
- *    - TODO: JWT token generation (not implemented yet)
+ *    - Generates JWT token via TokenService
+ *    - Returns ApiSuccess with token and user payload (id, email, fullName, role)
  *
  * @dependencies
  * - userRepository: Repository object for accessing user data
@@ -68,7 +67,7 @@ export default class AuthService {
    * @returns {ApiSuccess} Structured success response
    * @throws {ApiError} If email contains non-English characters or already exists
    */
-  async register({ email, password }) {
+  async register({ email, password, fullName }) {
     // Validate that email contains only English characters
     validateEmail(email);
     // Check if the email already exists
@@ -82,7 +81,11 @@ export default class AuthService {
     }
 
     // Create the new user
-    const user = await this.userRepository.create({ email, password });
+    const user = await this.userRepository.create({
+      email,
+      password,
+      fullName,
+    });
 
     // Log successful creation
     logger.log("User has been created successfully:", email);
@@ -129,6 +132,7 @@ export default class AuthService {
     const payload = {
       id: user._id,
       email: user.email,
+      fullName: user.fullName,
       role: user.role,
     };
 
