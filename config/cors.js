@@ -47,14 +47,15 @@ const allowedOrigins = {
     "http://localhost:3000", // React/Next.js dev server (common port)
     "http://localhost:3001", // Alternative frontend port
     "http://localhost:5173", // Vite dev server default port
+    "http://localhost:4173", // Vite preview port
     "http://127.0.0.1:3000", // Localhost alternative notation
     "http://127.0.0.1:3001",
     "http://127.0.0.1:5173",
+    "http://127.0.0.1:4173",
+    // Add your friend's IP if working from different machine:
+    // "http://192.168.x.x:5173" // Replace with actual IP if needed
   ],
-  staging: [
-    "https://staging.example.com",
-    "https://stage.example.com",
-  ],
+  staging: ["https://staging.example.com", "https://stage.example.com"],
   production: [
     "https://example.com", // Main production domain
     "https://www.example.com", // www subdomain

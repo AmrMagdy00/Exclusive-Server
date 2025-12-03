@@ -39,7 +39,7 @@ import express from "express";
 import cors from "cors";
 import logger from "./middleware/logger/logger.js";
 import cookieParser from "cookie-parser";
-import { corsOptionsOpen } from "./config/cors.js";
+import { corsOptions } from "./config/cors.js";
 
 // Import router creation functions
 import createAuthRouter from "./routes/authRouter.js";
@@ -49,10 +49,11 @@ export function createApp() {
   const app = express();
 
   // -------------------- CORS Configuration --------------------
-  // Enable CORS to allow all origins (any domain can access this API)
-  // Warning: This is permissive and should only be used for public APIs
-  // For production with sensitive data, use corsOptions with origin whitelist instead
-  app.use(cors(corsOptionsOpen));
+  // Enable CORS with origin whitelist for secure cross-origin requests
+  // Allows specific localhost ports for development (3000, 3001, 5173)
+  // Also allows 127.0.0.1 notation for local development
+  // See config/cors.js for allowed origins by environment
+  app.use(cors(corsOptions));
 
   // Enable parsing of JSON request bodies
   app.use(express.json());
