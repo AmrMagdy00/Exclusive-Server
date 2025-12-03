@@ -52,8 +52,10 @@ const allowedOrigins = {
     "http://127.0.0.1:3001",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:4173",
-    // Add your friend's IP if working from different machine:
-    // "http://192.168.x.x:5173" // Replace with actual IP if needed
+    "http://197.120.222.153:5173", // Friend's IP with Vite dev server
+    "http://197.120.222.153:4173", // Friend's IP with Vite preview
+    "http://197.120.222.153:3000", // Friend's IP with React dev server
+    "http://197.120.222.153:3001", // Friend's IP alternative port
   ],
   staging: ["https://staging.example.com", "https://stage.example.com"],
   production: [
