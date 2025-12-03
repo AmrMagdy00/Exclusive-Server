@@ -63,8 +63,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true, // Make password mandatory
       minlength: [6, "Password must be at least 6 characters"], // Minimum length validation
+      select: false,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
   },
+
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
   }
@@ -77,7 +84,9 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   // Hash the password with bcrypt
-  this.password = await bcrypt.hash(this.password, 10);
+  const salt = await bcrypt.genSalt(10);
+
+  this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 

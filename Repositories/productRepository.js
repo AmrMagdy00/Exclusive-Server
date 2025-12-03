@@ -1,5 +1,5 @@
 // ProductRepository handles direct database operations for products
-import Product from "../models/product.js";
+import Product from "../models/productModel.js";
 
 export default class ProductRepository {
   // -------------------- Find Products with Pagination / Filtering --------------------

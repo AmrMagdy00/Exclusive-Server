@@ -55,10 +55,10 @@ import ProductController from "./controllers/productController.js";
 
 // Import repositories, services, and controllers for users
 import UserRepository from "./Repositories/userRepository.js";
-import UserService from "./services/userService.js";
-import UserController from "./controllers/userController.js";
+import AuthService from "./services/auth/authService.js";
+import UserController from "./controllers/authController.js";
 import createProductRouter from "./routes/productRouter.js";
-import createUserRouter from "./routes/userRouter.js";
+import createAuthRouter from "./routes/authRouter.js";
 
 // -------------------- Dependency Injection --------------------
 // Create instances of repositories, services, and controllers
@@ -67,8 +67,8 @@ const productService = new ProductService(productRepository); // Contains busine
 const productController = new ProductController(productService); // Handles HTTP requests for products
 
 const userRepository = new UserRepository(); // Handles DB operations for users
-const userService = new UserService(userRepository); // Contains business logic for users
-const userController = new UserController(userService); // Handles HTTP requests for users
+const authService = new AuthService(userRepository); // Contains business logic for users
+const userController = new UserController(authService); // Handles HTTP requests for users
 
 // -------------------- Create Express App --------------------
 // Initialize Express app
@@ -83,7 +83,7 @@ await connectDB();
 app.use("/products", createProductRouter(productController));
 
 // Mount user routes at /users
-app.use("/users", createUserRouter(userController));
+app.use("/users", createAuthRouter(userController));
 
 // -------------------- Error Handler --------------------
 // This middleware catches any errors thrown in routes or other middlewares

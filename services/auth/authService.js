@@ -1,15 +1,15 @@
 /**
- * @file userService.js
+ * @file authService.js
  * @description
- * Service class to handle business logic related to users, such as signup and login.
+ * Service class to handle business logic related to users, such as Register and login.
  *
  * Responsibilities:
  * 1. Interacts with userRepository to perform data operations.
- * 2. Implements signup and login logic including validation and password checks.
+ * 2. Implements Register and login logic including validation and password checks.
  * 3. Returns structured success or error responses for controllers using ApiSuccess / ApiError.
  *
  * Methods:
- * - async signup(email, password)
+ * - async Register(email, password)
  *    - Validates email format (English only)
  *    - Checks if email already exists
  *    - Creates a new user
@@ -44,37 +44,33 @@
  * // }
  */
 
-import logger from "../middleware/logger/logger.js";
-import ApiError from "../utils/ApiError.js";
-import ApiSuccess from "../utils/ApiSuccess.js";
+import logger from "../../middleware/logger/logger.js";
+import ApiError from "../../utils/ApiError.js";
+import ApiSuccess from "../../utils/ApiSuccess.js";
+import { validateEmail } from "../../Validators/authValidator.js";
+import TokenService from "./tokenService.js";
 
-export default class UserService {
+export default class AuthService {
   constructor(userRepository) {
     /**
      * Repository instance for user data access
      * @type {UserRepository}
      */
     this.userRepository = userRepository;
+    this.tokenService = new TokenService();
   }
 
-  // -------------------- Signup --------------------
+  // -------------------- Register --------------------
   /**
-   * Sign up a new user
+   * Register  a new user
    * @param {string} email - User email
    * @param {string} password - User password
    * @returns {ApiSuccess} Structured success response
    * @throws {ApiError} If email contains non-English characters or already exists
    */
-  async signup(email, password) {
+  async register({ email, password }) {
     // Validate that email contains only English characters
-    if (!/^[\x00-\x7F]+$/.test(email)) {
-      throw new ApiError({
-        message: "Email must contain only English characters",
-        statusCode: 400,
-        errorCode: "INVALID_EMAIL",
-      });
-    }
-
+    validateEmail(email);
     // Check if the email already exists
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
@@ -129,13 +125,20 @@ export default class UserService {
       });
     }
 
-    // TODO: Generate JWT token here
+    // Generate JWT token
+    const payload = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const token = this.tokenService.generateToken(payload);
 
     // Return structured success response
     return new ApiSuccess({
       message: "User logged in successfully",
       statusCode: 200,
-      data: { userId: user._id },
+      data: { token: token, user: payload },
       successCode: "USER_LOGIN",
     });
   }

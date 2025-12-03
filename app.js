@@ -39,7 +39,7 @@ import express from "express";
 import cors from "cors";
 import logger from "./middleware/logger/logger.js";
 // Import router creation functions
-import createUserRouter from "./routes/userRouter.js";
+import createAuthRouter from "./routes/authRouter.js";
 import createProductRouter from "./routes/productRouter.js";
 // Function to create and configure the Express app
 export function createApp() {

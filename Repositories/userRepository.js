@@ -29,7 +29,7 @@
  * const foundUser = await userRepository.findByEmail('test@example.com');
  */
 
-import User from "../models/user.js";
+import User from "../models/userModel.js";
 
 // UserRepository handles direct database operations for the User model
 
@@ -37,7 +37,7 @@ export default class UserRepository {
   // -------------------- Find user by email --------------------
   async findByEmail(email) {
     // Search the database for a user with the given email
-    return await User.findOne({ email });
+    return User.findOne({ email }).select("+password");
   }
 
   // -------------------- Create new user --------------------
@@ -47,6 +47,6 @@ export default class UserRepository {
 
     // Save the user to the database
     // The pre-save middleware in the User model will hash the password
-    return await User.save();
+    return user.save();
   }
 }
