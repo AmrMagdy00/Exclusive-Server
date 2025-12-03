@@ -30,49 +30,91 @@ export default class authController {
 
   // -------------------- Login Handler --------------------
   /**
-   * Handles POST /users/login
+   * Handles POST /users/login requests
    *
    * Flow:
-   * 1. Extracts email and password from req.body.
-   * 2. Calls authService.login(email, password).
-   * 3. Returns structured JSON response with success status and data.
-   * 4. If an error occurs, forwards it to the global error handler using `next(err)`.
+   * 1. Extracts email and password from request body.
+   * 2. Validates credentials through authService.
+   * 3. Generates JWT token and stores in HTTP-only cookie.
+   * 4. Returns success response with user data (token excluded from response body for security).
+   * 5. If an error occurs, forwards it to the global error handler.
    *
-   * @param {import('express').Request} req
-   * @param {import('express').Response} res
-   * @param {import('express').NextFunction} next
+   * Security measures:
+   * - httpOnly: Prevents JavaScript access to token (XSS protection).
+   * - secure: Cookie only sent over HTTPS in production.
+   * - sameSite: Prevents CSRF attacks.
+   * - maxAge: Token expires after 7 days.
+   *
+   * @param {import('express').Request} req - Express request with email/password in body
+   * @param {import('express').Response} res - Express response object
+   * @param {import('express').NextFunction} next - Express next function for error handling
    */
   async login(req, res, next) {
     try {
+      // Extract email and password from request body
       const { email, password } = req.body;
-      const result = await this.authService.login(email, password);
 
+      // Call authService to verify credentials and generate token
+      const result = await this.authService.login({ email, password });
+
+      // Extract token from response (should not be sent in JSON response body)
+      const token = result.data.token;
+
+      // Remove token from response body for security (it's in cookie already)
+      delete result.data.token;
+
+      // Configure secure cookie options
+      const cookieOptions = {
+        httpOnly: true, // Accessible only by web server, not JavaScript (XSS protection)
+        secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
+        sameSite: "strict", // Prevent CSRF attacks
+        maxAge: 7 * 24 * 60 * 60 * 1000, // Expire after 7 days (in milliseconds)
+      };
+
+      // Store token in HTTP-only cookie for subsequent requests
+      res.cookie("token", token, cookieOptions);
+
+      // Return response with user data (token stored securely in cookie)
       return res.status(result.statusCode).json(result);
     } catch (err) {
+      // Forward authentication errors to global error handler
       next(err);
     }
   }
 
   // -------------------- Register Handler --------------------
   /**
-   * Handles POST /users/Register
+   * Handles POST /users/register requests
    *
    * Flow:
-   * 1. Extracts email and password from req.body.
-   * 2. Calls authService.Register(email, password).
-   * 3. Returns structured JSON response with success status and data.
-   * 4. If an error occurs, forwards it to the global error handler using `next(err)`.
+   * 1. Extracts email and password from request body.
+   * 2. Validates input and checks email uniqueness through authService.
+   * 3. Creates new user account in database.
+   * 4. Returns success response with new user ID.
+   * 5. If an error occurs (invalid email, duplicate email, etc.), forwards it to global error handler.
    *
-   * @param {import('express').Request} req
-   * @param {import('express').Response} res
-   * @param {import('express').NextFunction} next
+   * Validations performed:
+   * - Email must contain only English characters.
+   * - Email must be valid format.
+   * - Email must not already exist in database.
+   * - Password must be at least 6 characters.
+   *
+   * @param {import('express').Request} req - Express request with email/password in body
+   * @param {import('express').Response} res - Express response object
+   * @param {import('express').NextFunction} next - Express next function for error handling
    */
   async register(req, res, next) {
     try {
-      const result = await this.authService.register(req.body);
+      // Extract email and password from request body
+      const { email, password } = req.body;
 
+      // Call authService to validate and register new user
+      const result = await this.authService.register({ email, password });
+
+      // Return success response with newly created user ID
       return res.status(result.statusCode).json(result);
     } catch (err) {
+      // Forward registration errors to global error handler
       next(err);
     }
   }

@@ -104,7 +104,7 @@ export default class AuthService {
    * @returns {ApiSuccess} Structured success response
    * @throws {ApiError} If user not found or password is invalid
    */
-  async login(email, password) {
+  async login({ email, password }) {
     // Find user by email
     const user = await this.userRepository.findByEmail(email);
     if (!user) {

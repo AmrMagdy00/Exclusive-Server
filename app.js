@@ -38,6 +38,8 @@
 import express from "express";
 import cors from "cors";
 import logger from "./middleware/logger/logger.js";
+import cookieParser from "cookie-parser";
+
 // Import router creation functions
 import createAuthRouter from "./routes/authRouter.js";
 import createProductRouter from "./routes/productRouter.js";
@@ -50,6 +52,12 @@ export function createApp() {
 
   // Enable parsing of JSON request bodies
   app.use(express.json());
+
+  // -------------------- Cookie Parser Middleware --------------------
+  // Enable parsing of HTTP cookies from request headers
+  // Allows access to cookies via req.cookies object in route handlers
+  // Used for storing and retrieving JWT tokens in HTTP-only cookies (more secure than Authorization headers)
+  app.use(cookieParser());
 
   // -------------------- Request Logger --------------------
   // Custom middleware to log each incoming request and its duration
