@@ -9,10 +9,10 @@ export default class ProductController {
   async getAllProducts(req, res, next) {
     try {
       // Pass query parameters to the service (for filtering, sorting, pagination)
-      const products = await this.productService.getAllProducts(req.query);
+      const result = await this.productService.getAllProducts(req.query);
 
-      // Respond with status 200 and the list of products
-      res.status(200).json(products);
+      // Respond with structured success response
+      return res.status(result.statusCode).json(result);
     } catch (err) {
       // Pass errors to the error-handling middleware
       next(err);
@@ -25,14 +25,56 @@ export default class ProductController {
       const { id } = req.params; // Get the product ID from the route parameters
 
       // Call the service layer to retrieve the product
-      const product = await this.productService.getProductById(id);
+      const result = await this.productService.getProductById(id);
 
-      // If product not found, respond with 404
-      if (!product)
-        return res.status(404).json({ message: "Product not found" });
+      // Respond with structured success response
+      return res.status(result.statusCode).json(result);
+    } catch (err) {
+      // Pass errors to the error-handling middleware
+      next(err);
+    }
+  }
 
-      // Respond with status 200 and the product data
-      return res.status(200).json(product);
+  // -------------------- Create Product --------------------
+  async create(req, res, next) {
+    try {
+      // Call the service layer to create the product
+      const result = await this.productService.create(req.body);
+
+      // Respond with structured success response
+      return res.status(result.statusCode).json(result);
+    } catch (err) {
+      // Pass errors to the error-handling middleware
+      next(err);
+    }
+  }
+
+  // -------------------- Update Product --------------------
+  async update(req, res, next) {
+    try {
+      const { id } = req.params; // Get the product ID from the route parameters
+
+      // Call the service layer to update the product
+      const result = await this.productService.update(id, req.body);
+
+      // Respond with structured success response
+      return res.status(result.statusCode).json(result);
+    } catch (err) {
+      // Pass errors to the error-handling middleware
+      next(err);
+    }
+  }
+
+  // -------------------- Delete Product --------------------
+  async delete(req, res, next) {
+    try {
+      const { id } = req.params; // Get the product ID from the route parameters
+
+      // Call the service layer to delete the product
+      const result = await this.productService.delete(id);
+
+      // Respond with structured success response
+      return res.status(result.statusCode).json(result);
     } catch (err) {
       // Pass errors to the error-handling middleware
       next(err);

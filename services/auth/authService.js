@@ -67,7 +67,7 @@ export default class AuthService {
    * @returns {ApiSuccess} Structured success response
    * @throws {ApiError} If email contains non-English characters or already exists
    */
-  async register({ email, password, fullName }) {
+  async register({ email, password, fullName, role }) {
     // Validate that email contains only English characters
     validateEmail(email);
     // Check if the email already exists
@@ -85,6 +85,7 @@ export default class AuthService {
       email,
       password,
       fullName,
+      role,
     });
 
     // Log successful creation

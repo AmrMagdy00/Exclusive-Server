@@ -110,13 +110,14 @@ export default class authController {
   async register(req, res, next) {
     try {
       // Extract fullName, email, and password from request body
-      const { email, password, fullName } = req.body;
+      const { email, password, fullName, role } = req.body;
 
       // Call authService to validate and register new user
       const result = await this.authService.register({
         email,
         password,
         fullName,
+        role,
       });
 
       // Return success response with newly created user ID

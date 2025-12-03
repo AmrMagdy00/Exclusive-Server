@@ -1,36 +1,117 @@
 import mongoose from "mongoose";
+import validator from "validator";
 
 // -------------------- Color Sub-Schema --------------------
-// This defines a color variant for a product
 const colorSchema = new mongoose.Schema(
   {
-    color: { type: String, required: true }, // Color name (e.g., "red")
-    images: { type: [String] }, // Array of image URLs for this color
-    quantity: { type: Number, required: true }, // Stock quantity for this color
+    color: {
+      type: String,
+      required: [true, "Color is required"],
+      trim: true,
+      minlength: [1, "Color cannot be empty"],
+    },
+    images: {
+      type: [String],
+      validate: {
+        validator: (arr) => arr.every((url) => typeof url === "string"),
+        message: "Images must be an array of strings",
+      },
+    },
+    quantity: {
+      type: Number,
+      required: [true, "Quantity is required"],
+      min: [0, "Quantity cannot be negative"],
+    },
   },
-  { _id: false } // Disable _id for subdocuments, as it's not needed here
+  { _id: false }
 );
 
 // -------------------- Product Schema --------------------
-// Main schema for products
 const productSchema = new mongoose.Schema(
   {
-    id: { type: Number, required: true, unique: true }, // Product ID (unique)
-    isHook: { type: Boolean }, // Optional field
-    title: { type: String, required: true }, // Product title
-    price: { type: Number, required: true }, // Original price
-    discountPrice: { type: Number }, // Optional discounted price
-    ratingCount: { type: Number, required: true }, // Number of ratings
-    avgRate: { type: Number, required: true }, // Average rating
-    mainImgSRC: { type: String, required: true }, // Main image URL
-    description: { type: String, required: true }, // Product description
-    category: { type: String, required: true }, // Main category
-    subCategory: { type: String, required: true }, // Sub-category
-    isFeatured: { type: Boolean }, // Optional: featured product
-    isFlash: { type: Boolean }, // Optional: flash sale
-    colors: { type: [colorSchema], required: true }, // Array of color variants
+    id: { type: Number, unique: true },
+
+    isHook: { type: Boolean },
+
+    title: {
+      type: String,
+      required: [true, "Title is required"],
+      trim: true,
+      minlength: [7, "Title must be at least 7 characters"],
+    },
+
+    price: {
+      type: Number,
+      required: [true, "Price is required"],
+      min: [1, "Price must be more than 0"],
+    },
+
+    discountPrice: {
+      type: Number,
+      validate: {
+        validator: function (value) {
+          // Only validate if discount exists
+          return !value || value < this.price;
+        },
+        message: "Discount price must be lower than price",
+      },
+    },
+
+    ratingCount: {
+      type: Number,
+      required: [true, "Rating count is required"],
+      min: [0, "Rating count cannot be negative"],
+    },
+
+    avgRate: {
+      type: Number,
+      required: [true, "Average rating is required"],
+      min: [0, "Rating cannot be less than 0"],
+      max: [5, "Rating cannot be more than 5"],
+    },
+
+    mainImgSRC: {
+      type: String,
+      required: [true, "Main image is required"],
+      validate: {
+        validator: (value) => validator.isURL(value),
+        message: "Main image must be a valid URL",
+      },
+    },
+
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: [10, "Description must be at least 10 characters"],
+    },
+
+    category: {
+      type: String,
+      required: [true, "Category is required"],
+      trim: true,
+    },
+
+    subCategory: {
+      type: String,
+      required: [true, "Sub-category is required"],
+      trim: true,
+    },
+
+    isFeatured: { type: Boolean },
+
+    isFlash: { type: Boolean },
+
+    colors: {
+      type: [colorSchema],
+      required: [true, "Colors are required"],
+      validate: {
+        validator: (value) => value.length > 0,
+        message: "At least one color is required",
+      },
+    },
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt fields
+  { timestamps: true }
 );
 
 // Create the Product model and specify the collection name as "Products"

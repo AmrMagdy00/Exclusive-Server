@@ -36,6 +36,7 @@
 import mongoose from "mongoose";
 import validator from "validator"; // Library to validate strings like emails
 import bcrypt from "bcrypt"; // Library to hash passwords
+import ROLES from "../constants/roles.js";
 
 // -------------------- User Schema Definition --------------------
 const userSchema = new mongoose.Schema(
@@ -76,8 +77,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: Object.values(ROLES),
+      default: ROLES.USER,
     },
   },
 
