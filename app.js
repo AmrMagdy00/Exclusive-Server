@@ -39,7 +39,7 @@ import express from "express";
 import cors from "cors";
 import logger from "./middleware/logger/logger.js";
 import cookieParser from "cookie-parser";
-import { corsOptions } from "./config/cors.js";
+import { corsOptionsOpen } from "./config/cors.js";
 
 // Import router creation functions
 import createAuthRouter from "./routes/authRouter.js";
@@ -49,12 +49,10 @@ export function createApp() {
   const app = express();
 
   // -------------------- CORS Configuration --------------------
-  // Enable CORS with strict origin validation
-  // Only allows requests from whitelisted origins (see config/cors.js)
-  // In development: allows localhost origins
-  // In production: only allows specified frontend domains
-  // Credentials (cookies, auth headers) are allowed for same-origin requests
-  app.use(cors(corsOptions));
+  // Enable CORS to allow all origins (any domain can access this API)
+  // Warning: This is permissive and should only be used for public APIs
+  // For production with sensitive data, use corsOptions with origin whitelist instead
+  app.use(cors(corsOptionsOpen));
 
   // Enable parsing of JSON request bodies
   app.use(express.json());
