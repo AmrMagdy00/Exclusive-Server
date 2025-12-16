@@ -67,14 +67,14 @@ const allowedOrigins = {
 
 // -------------------- CORS Options Configuration --------------------
 /**
- * Configure CORS options based on environment
+ * Configure CORS options to allow any domain
+ * This configuration enables CORS for all origins (any domain)
  * @type {import('cors').CorsOptions}
  */
 export const corsOptions = {
-  // Allow any origin — reflect request origin and permit credentials
-  // This makes the API accessible from any domain (development & production).
-  // Warning: This is permissive and may expose sensitive endpoints. Use with caution.
-  origin: true,
+  // Allow any origin (any domain) - enables CORS for all domains
+  // This makes the API accessible from any domain (development & production)
+  origin: "*",
 
   // Allow these HTTP methods in cross-origin requests
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -86,10 +86,9 @@ export const corsOptions = {
     "X-Requested-With", // AJAX requests identification
   ],
 
-  // Allow credentials (cookies, authorization headers) to be included in cross-origin requests
-  // With `origin: true`, the server will echo the request Origin header which allows
-  // credentials to be used while still returning a specific Access-Control-Allow-Origin.
-  credentials: true,
+  // Note: credentials cannot be true when origin is "*"
+  // If you need credentials, use origin: true or a function that returns the origin
+  credentials: false,
 
   // Preflight request caching time (in seconds)
   // Browsers cache preflight responses to reduce OPTIONS requests
@@ -97,17 +96,22 @@ export const corsOptions = {
 };
 
 /**
- * Alternative: Simple CORS configuration for development/testing
- * Allows all origins without validation
- * Warning: Never use in production!
+ * Alternative: CORS configuration with credentials support
+ * Allows any origin but enables credentials (cookies, auth headers)
+ * Use this if you need to send cookies/auth headers from any domain
  *
  * @type {import('cors').CorsOptions}
  */
-export const corsOptionsOpen = {
-  origin: "*", // Allow all origins
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: false, // Cannot use credentials with '*' origin
+export const corsOptionsWithCredentials = {
+  // Use a function to allow any origin while supporting credentials
+  origin: (origin, callback) => {
+    // Allow any origin
+    callback(null, true);
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  credentials: true, // Enable credentials when using origin function
+  maxAge: 3600,
 };
 
 export default corsOptions;
